@@ -1,0 +1,109 @@
+.voter-screen {
+    position: relative;
+    width: 100%;
+    min-height: 90vh;
+    overflow: auto;
+}
+
+.voter-details {
+    position: relative;
+    width: 80vw;
+    margin: 5vh auto;
+    padding: 3vh 4vw;
+    background-color: rgb(14, 102, 124);
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px 3px rgb(138, 241, 255) inset;
+    display: flex;
+    font-size: 2.3vh;
+    line-height: 4vh;
+}
+
+.voter-details-block {
+    display: block;
+}
+
+.voter-details ul {
+    margin: 0;
+}
+
+.vd-column-1 {
+    position: relative;
+    flex: 70%;
+}
+
+.vd-column-2 {
+    position: relative;
+    flex: 30%;
+}
+
+.vd-column-2 img {
+    position: relative;
+    height: 23vh;
+}
+
+.vd-column-2 figure {
+    margin: 0;
+}
+
+.vd-row {
+    position: relative;
+    width: 100%;
+    display: flex;
+}
+
+.vd-row div:nth-child(1) {
+    position: relative;
+    flex: 1;
+}
+
+.vd-row div:nth-child(2) {
+    position: relative;
+    flex: 2;
+}
+
+.pm-sort {
+    position: relative;
+    font-size: 2.7vh;
+    display: flex;
+}
+
+.pm-sort input {
+    height: 2.0vh;
+    width: 2.0vh;
+}
+
+.pm-sort-button {
+    position: relative;
+    width: 6vw;
+    height: 3.5vh;
+    font-size: 2.5vh;
+    line-height: 3.5vh;
+    text-align: center;
+    background-color: rgb(105, 105, 105);
+    color: black;
+    box-shadow: 0px 0px 2px 0.5px black inset;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pm-sort-button-selected {
+    background-color: whitesmoke;
+    color: black;
+}
+
+.members-table {
+    width: 100%;
+    border-spacing: 0;
+    border: 1px solid rgb(121, 212, 224);
+    background-color: rgb(10, 75, 92);
+}
+
+.members-table th {
+    background-color: rgb(30, 180, 218);
+}
+
+.members-table th,td {
+    padding: 1vh 2vw;
+    border: 1px solid rgb(121, 212, 224);
+    text-align: center;
+}

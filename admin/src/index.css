@@ -55,7 +55,7 @@ body {
 }
 
 .header-heading {
-  flex: 45%;
+  flex: 65%;
   font-weight: 700;
   font-size: 5.5vh;
   line-height: 10vh;
@@ -64,36 +64,8 @@ body {
   -webkit-text-stroke: 1.5px rgb(94, 166, 175);
 }
 
-.header-button {
-  position: relative;
-  flex: 1;
-  font-weight: 700;
-  font-size: 3vh;
-  line-height: 10vh;
-  text-align: center;
-  color: whitesmoke;
-  border-bottom: 2px solid white;
-  cursor: pointer;
-  transition: background-color 200ms;
-  /* border-bottom: 3px solid white; */
-}
-
-.header-button-active {
-  background-color: rgb(17, 79, 131);
-}
-
-.header-button:hover {
-  border-bottom: 4px solid white;
-  background-color: rgb(17, 79, 131);
-}
-
-.header-button:active {
-  background-color: rgb(180, 180, 180);
-}
-
 .header-info {
   position: relative;
-  flex: 2;
   display: flex;
 }
 

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import '../Styling/login.css';
 
-export default function Login({ setLogIn, setUser, setParty, setLoading }) {
+export default function Login({ setLogIn, setLoading }) {
     useEffect(() => {
         setLoading(false);
     }, []);
@@ -23,13 +23,7 @@ export default function Login({ setLogIn, setUser, setParty, setLoading }) {
             var response = await axios.post('/validateLogin', inputData);
             if (response.data.success) {
                 setLogIn(response.data.details);
-                if (response.data.user) {
-                    setUser(response.data.user);
-                }
-                else {
-                    setParty(response.data.party);
-                }
-                navigate('/' + response.data.details.type)
+                navigate('/dashboard');
             }
             else {
                 inputID.value = null;
