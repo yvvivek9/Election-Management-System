@@ -5,10 +5,9 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-ro
 import './index.css';
 
 import Login from './Pages/login';
-import Admin from './Pages/admin';
 import Candidate from './Pages/candidate';
 import Consti from './Pages/consti';
-import Dashboard from './Pages/admin';
+import Dashboard from './Pages/dashboard';
 import Party from './Pages/party';
 import Results from './Pages/results';
 import Voter from './Pages/voter';
@@ -36,7 +35,6 @@ function App() {
 			<div className='header-adjuster'></div>
 			<Routes>
 				<Route exact index path='/' element={<Login setLogIn={setLogIn} setLoading={setLoading} />} />
-				<Route exact path='/admin' element={<Admin setLoading={setLoading} />} />
 				<Route exact path='/candidate' element={<Candidate setLoading={setLoading} />} />
 				<Route exact path='/constituency' element={<Consti setLoading={setLoading} />} />
 				<Route exact path='/dashboard' element={<Dashboard setLoading={setLoading} />} />
@@ -44,7 +42,7 @@ function App() {
 				<Route exact path='/results' element={<Results setLoading={setLoading} />} />
 				<Route exact path='/voter' element={<Voter setLoading={setLoading} />} />
 			</Routes>
-			{showNav && <NavigationBar />}
+			{showNav && <NavigationBar setLoading={setLoading} />}
 			<Header logIn={logIn} showNav={showNav} setShowNav={setShowNav} setLogIn={setLogIn} />
 		</BrowserRouter>
 		{loading && <LoadingScreen />}
@@ -71,10 +69,10 @@ function Header({ logIn, showNav, setShowNav, setLogIn }) {
 		navigate("/");
 	}
 
-	const {pathname} = useLocation();
+	const { pathname } = useLocation();
 	useEffect(() => {
 		if (pathname === '/') {
-			setLogIn({status: false});
+			setLogIn({ status: false });
 		}
 	}, [pathname]);
 
@@ -103,16 +101,16 @@ function Header({ logIn, showNav, setShowNav, setLogIn }) {
 	</div>
 }
 
-function NavigationBar () {
+function NavigationBar({ setLoading }) {
 	const navigate = useNavigate();
-	const {pathname} = useLocation();
+	const { pathname } = useLocation();
 
 	useEffect(() => {
-		handleClick(pathname);
+		handleRoute(pathname);
 	}, [pathname]);
-	
-	const handleClick = (route) => {
-		var routes = ['/dashboard', '/voter', '/candidate', '/party', '/constituency', '/results', '/admin'];
+
+	const handleRoute = (route) => {
+		var routes = ['/dashboard', '/voter', '/candidate', '/party', '/constituency', '/results'];
 		var index = routes.findIndex(value => value === route);
 		var buttons = document.getElementsByClassName('nav-button');
 		for (var i = 0; i < buttons.length; i++) {
@@ -121,33 +119,34 @@ function NavigationBar () {
 		buttons[index].classList.add('nav-button-active');
 	}
 
+	const handleClick = (route) => {
+		setLoading(true);
+		navigate(route);
+	}
+
 	return <div className='navbar'>
-		<div className='nav-button' onClick={() => {navigate('/dashboard')}}>
+		<div className='nav-button' onClick={() => { handleClick('/dashboard') }}>
 			<div className='nav-button-layer1'>Dashboard</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => {navigate('/voter')}}>
+		<div className='nav-button' onClick={() => { handleClick('/voter') }}>
 			<div className='nav-button-layer1'>Voter</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => {navigate('/candidate')}}>
+		<div className='nav-button' onClick={() => { handleClick('/candidate') }}>
 			<div className='nav-button-layer1'>Candidate</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => {navigate('/party')}}>
+		<div className='nav-button' onClick={() => { handleClick('/party') }}>
 			<div className='nav-button-layer1'>Party</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => {navigate('/constituency')}}>
+		<div className='nav-button' onClick={() => { handleClick('/constituency') }}>
 			<div className='nav-button-layer1'>Constituency</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => {navigate('/results')}}>
+		<div className='nav-button' onClick={() => { handleClick('/results') }}>
 			<div className='nav-button-layer1'>Results</div>
-			<div className='nav-button-layer2'>&gt;</div>
-		</div>
-		<div className='nav-button' onClick={() => {navigate('/admin')}}>
-			<div className='nav-button-layer1'>Admin</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
 	</div>

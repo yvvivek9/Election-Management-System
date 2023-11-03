@@ -12,31 +12,24 @@ export default function Login({ setLogIn, setLoading }) {
     const navigate = useNavigate();
 
     const handleClick = async () => {
-        // setLoading(true);
-        // var inputID = document.getElementById('login-id');
-        // var inputPWD = document.getElementById('login-password');
-        // var inputData = {
-        //     id: inputID.value,
-        //     password: inputPWD.value
-        // }
-        // try {
-        //     var response = await axios.post('/validateLogin', inputData);
-        //     if (response.data.success) {
-        //         setLogIn(response.data.details);
-        //         navigate('/dashboard');
-        //     }
-        //     else {
-        //         inputID.value = null;
-        //         inputPWD.value = null;
-        //         setLoading(false);
-        //         alert('Invalid Credentials');
-        //     }
-        // } catch (error) {
-        //     console.log('In logging in' + error);
-        //     setLoading(false);
-        // }
-        setLogIn({ status: true, user: 'Admin', id: '34567' });
-        navigate('/dashboard');
+        var inputID = document.getElementById('login-id');
+        var inputPWD = document.getElementById('login-password');
+        if (inputID.value.length !== 0 && inputPWD.value.length !== 0) {
+            if (inputID.value === "admin" && inputPWD.value === "admin") {
+                setLoading(true);
+                setLogIn({ status: true, user: 'Admin', id: '34567' });
+                navigate('/dashboard');
+            }
+            else {
+                alert("Invalid Credentials");
+                inputID.value = "";
+                inputPWD.value = "";
+            }
+        }
+        else {
+            alert("Please enter your credentials");
+        }
+
     }
 
     return <div className='login-screen'>
@@ -44,7 +37,7 @@ export default function Login({ setLogIn, setLoading }) {
             <div style={{ height: '10vh' }} />
             <input type='text' id='login-id' placeholder='Enter your ID' /><br />
             <div style={{ height: '3vh' }} />
-            <input type='text' id='login-password' placeholder='Enter your password' /><br />
+            <input type='password' id='login-password' placeholder='Enter your password' /><br />
             <div style={{ height: '5vh' }} />
             <button onClick={handleClick}>Login</button>
         </div>
