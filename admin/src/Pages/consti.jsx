@@ -78,7 +78,7 @@ export default function Consti({ setLoading }) {
                         <input type="text" className="input-field" id="new-consti-state" />
                     </div>
                 </div>
-                <div style={{ height: '5vh' }} />
+                <div style={{ height: '4vh' }} />
                 <div className="action-buttons">
                     <button className="input-button input-button-green" onClick={addConsti}>ADD</button>
                 </div>
@@ -87,7 +87,7 @@ export default function Consti({ setLoading }) {
         <h2 style={{ marginLeft: "5vw" }}>List of Constituencies :</h2>
         <div className="page-box">
             {consti.map((value, index) => {
-                return <div className="box-row" key={index}>
+                return <div className="box-row" key={value.consti_id}>
                     <div className="box-content">
                         <div>
                             Constituency ID <br />
@@ -102,7 +102,7 @@ export default function Consti({ setLoading }) {
                             <input type="text" className="input-field consti-state" defaultValue={value.consti_state} />
                         </div>
                     </div>
-                    <div style={{ height: '5vh' }} />
+                    <div style={{ height: '4vh' }} />
                     <div className="action-buttons">
                         <button className="input-button input-button-red" onClick={() => {deleteConsti(index)}} >Delete</button>
                         <button className="input-button input-button-green" onClick={() => {changeConsti(index)}} >Change</button>

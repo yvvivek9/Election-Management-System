@@ -92,7 +92,7 @@ export default function Party({ setLoading }) {
                         <input type="text" className="input-field" id="new-party-alliance" style={{ width: "40vw" }} />
                     </div>
                 </div>
-                <div style={{ height: '5vh' }} />
+                <div style={{ height: '4vh' }} />
                 <div className="action-buttons">
                     <button className="input-button input-button-green" onClick={addParties}>ADD</button>
                 </div>
@@ -101,7 +101,7 @@ export default function Party({ setLoading }) {
         <h2 style={{ marginLeft: "5vw" }}>List of Parties :</h2>
         <div className="page-box">
             {parties.map((value, index) => {
-                return <div className="box-row" key={index}>
+                return <div className="box-row" key={value.id}>
                     <div className="box-content">
                         <div>
                             Party ID<br />
@@ -124,7 +124,7 @@ export default function Party({ setLoading }) {
                             <input type="text" className="input-field party-alliance" defaultValue={value.alliance} style={{ width: "40vw" }} />
                         </div>
                     </div>
-                    <div style={{ height: '5vh' }} />
+                    <div style={{ height: '4vh' }} />
                     <div className="action-buttons">
                         <button className="input-button input-button-red" onClick={() => {deleteParties(index)}} >Delete</button>
                         <button className="input-button input-button-green" onClick={() => {editParty(index)}} >Change</button>

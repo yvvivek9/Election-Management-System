@@ -181,8 +181,8 @@ CREATE TABLE IF NOT EXISTS r_2022 (
     candidate_id INT PRIMARY KEY,
     consti_id INT,
     vote_share INT,
-    FOREIGN KEY (candidate_id) REFERENCES candidate(id),
-    FOREIGN KEY (consti_id) REFERENCES consti(consti_id)
+    FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE,
+    FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE
 );
 
 INSERT INTO r_2022 (candidate_id, consti_id, vote_share) VALUES
@@ -206,8 +206,8 @@ CREATE TABLE IF NOT EXISTS r_2023 (
     candidate_id INT PRIMARY KEY,
     consti_id INT,
     vote_share INT,
-    FOREIGN KEY (candidate_id) REFERENCES candidate(id),
-    FOREIGN KEY (consti_id) REFERENCES consti(consti_id)
+    FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE,
+    FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE
 );
 
 INSERT INTO r_2023

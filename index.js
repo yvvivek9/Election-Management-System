@@ -14,12 +14,12 @@ const sqlQuery = (statement, params) => new Promise((resolve, reject) => {
         password: "Shadow@090703",
         database: "election",
     });
-    
+
     con.connect((err) => {
-        if(err) reject(err);
+        if (err) reject(err);
         else {
             con.query(statement, params, (err, result) => {
-                if(err) reject(err);
+                if (err) reject(err);
                 else {
                     con.end();
                     resolve(result);
@@ -46,10 +46,10 @@ app.post("/admin/getConsti", async (req, res) => {
     try {
         var query = "SELECT * FROM consti ORDER BY consti_id";
         var reply = await sqlQuery(query);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -59,10 +59,10 @@ app.post("/admin/addConsti", async (req, res) => {
         var reply = await sqlQuery(query, [req.body.id, req.body.name, req.body.state]);
         var query3 = "INSERT INTO diversity VALUES (?, 0, 0, 0, 0, 0, 0)";
         var reply3 = await sqlQuery(query3, [req.body.id]);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -70,10 +70,10 @@ app.post("/admin/deleteConsti", async (req, res) => {
     try {
         var query = "DELETE FROM consti WHERE consti_id = ?";
         var reply = await sqlQuery(query, [req.body.id]);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -81,10 +81,10 @@ app.post("/admin/editConsti", async (req, res) => {
     try {
         var query = "UPDATE consti SET consti_name = ?, consti_state = ? WHERE consti_id = ?";
         var reply = await sqlQuery(query, [req.body.name, req.body.state, req.body.id]);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -92,10 +92,10 @@ app.post("/admin/getParty", async (req, res) => {
     try {
         var query = "SELECT * FROM party ORDER BY id";
         var reply = await sqlQuery(query);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -109,10 +109,10 @@ app.post("/admin/addParty", async (req, res) => {
             req.body.leader,
             req.body.alliance
         ]);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -120,10 +120,10 @@ app.post("/admin/deleteParty", async (req, res) => {
     try {
         var query = "DELETE FROM party WHERE id = ?";
         var reply = await sqlQuery(query, [req.body.id]);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
@@ -137,31 +137,119 @@ app.post("/admin/editParty", async (req, res) => {
             req.body.alliance,
             req.body.id
         ]);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
     }
 });
 
 app.post("/admin/getCandi", async (req, res) => {
     try {
-        var query = 
-        "SELECT candidate.*, consti.consti_name, party.p_name " +
-        "FROM ((candidate " + 
-        "INNER JOIN consti ON candidate.consti_id = consti.consti_id) " + 
-        "INNER JOIN party ON candidate.party_id = party.id) " + 
-        "ORDER BY id";
+        var query = "SELECT * FROM candidate ORDER BY id";
         var reply = await sqlQuery(query);
-        res.status(200).json({success: true, data: reply});
+        res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
-        res.status(401).json({success: false});
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/addCandi", async (req, res) => {
+    try {
+        var query = "INSERT INTO candidate VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        var reply = await sqlQuery(query, [
+            req.body.id, req.body.fname, req.body.lname,
+            req.body.age, req.body.gender, req.body.caste,
+            req.body.consti, req.body.ruling, req.body.party
+        ]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/deleteCandi", async (req, res) => {
+    try {
+        var query = "DELETE FROM candidate WHERE id = ?";
+        var reply = await sqlQuery(query, [req.body.id]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/editCandi", async (req, res) => {
+    try {
+        var query = "UPDATE candidate SET f_name=?,  l_name=?, age=?, gender=?, caste=?, consti_id=?, ruling=?, party_id=? WHERE id = ?";
+        var reply = await sqlQuery(query, [
+            req.body.fname, req.body.lname,
+            req.body.age, req.body.gender, req.body.caste,
+            req.body.consti, req.body.ruling, req.body.party, req.body.id
+        ]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/getVoter", async (req, res) => {
+    try {
+        var query = "SELECT * FROM voter ORDER BY id";
+        var reply = await sqlQuery(query);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/addVoter", async (req, res) => {
+    try {
+        var query = "INSERT INTO voter VALUES (?, ?, ?, ?, ?, ?, ?)";
+        var reply = await sqlQuery(query, [
+            req.body.id, req.body.fname, req.body.lname,
+            req.body.age, req.body.gender, req.body.caste,
+            req.body.consti
+        ]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/deleteVoter", async (req, res) => {
+    try {
+        var query = "DELETE FROM voter WHERE id = ?";
+        var reply = await sqlQuery(query, [req.body.id]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/editVoter", async (req, res) => {
+    try {
+        var query = "UPDATE voter SET f_name=?,  l_name=?, age=?, gender=?, caste=?, consti_id=? WHERE id = ?";
+        var reply = await sqlQuery(query, [
+            req.body.fname, req.body.lname,
+            req.body.age, req.body.gender, req.body.caste,
+            req.body.consti, req.body.id
+        ]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
     }
 });
 
 app.post("/validateLogin", async (req, res) => {
-    
+
     var voter = {
         success: true,
         details: {
@@ -236,14 +324,21 @@ app.post("/getPartyMembers", (req, res) => {
 });
 
 app.post('/getAnnouncements', (req, res) => {
-    res.status(200).json({success: true, announcements: announcements });
+    res.status(200).json({ success: true, announcements: announcements });
 });
 
 app.post('/setAnnouncements', (req, res) => {
     announcements = req.body.data;
-    res.status(200).json({success: true, announcements: announcements });
+    res.status(200).json({ success: true, announcements: announcements });
 });
 
 app.listen(4000, () => {
     console.log('Server started running on port 4000');
 });
+
+var query =
+    "SELECT candidate.*, consti.consti_name, party.p_name " +
+    "FROM ((candidate " +
+    "INNER JOIN consti ON candidate.consti_id = consti.consti_id) " +
+    "INNER JOIN party ON candidate.party_id = party.id) " +
+    "ORDER BY id";
