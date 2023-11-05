@@ -52,6 +52,10 @@
     width: 70%;
 }
 
+.input-field-default {
+    width: auto;
+}
+
 .input-field:focus {
     outline: none;
 }
@@ -75,6 +79,7 @@
     font-size: 2.5vh;
     padding: 5px 10px;
     cursor: pointer;
+    height: fit-content;
 }
 
 .input-button-red {
@@ -89,4 +94,30 @@
 
 .announcement-input {
     width: 90%;
+}
+
+.table {
+    position: relative;
+    margin: 5vh auto;
+    border: 2px solid whitesmoke;
+    border-spacing: 0;
+}
+
+.table th {
+    background-color: rgb(21, 144, 175);
+}
+
+.table td, th {
+    min-width: 10vw;
+    border: 1px solid whitesmoke;
+    padding: 2vh 2vw;
+    font-size: 2.3vh;
+    background-color: rgb(11, 85, 104);
+    text-align: center;
+}
+
+.outside-content {
+    width: fit-content;
+    display: flex;
+    margin: 0 auto;
 }

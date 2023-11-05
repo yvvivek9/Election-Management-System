@@ -6,12 +6,15 @@ import "../Styling/default.css";
 export default function Party({ setLoading }) {
     useEffect(() => {
         fetchParties();
-    });
+    }, []);
 
     const [parties, setParties] = useState([]);
+    const [login, setLogin] = useState([]);
 
     const fetchParties = async () => {
         try {
+            var reply2 = await axios.post("/admin/getLogins", { user_type: "party" });
+            setLogin(reply2.data.data);
             var reply = await axios.post('/admin/getParty');
             setParties(reply.data.data);
             setLoading(false);
@@ -30,6 +33,12 @@ export default function Party({ setLoading }) {
                 leader: document.getElementById('new-party-leader').value,
                 alliance: document.getElementById('new-party-alliance').value
             });
+            await axios.post('/admin/addLogins', {
+                user_type: "party",
+                user_id: document.getElementById('new-party-id').value,
+                user_name: document.getElementById('new-party-username').value,
+                user_pass: document.getElementById('new-party-password').value,
+            });
             fetchParties();
         } catch (error) {
             console.log("Error in adding party \n" + error);
@@ -41,6 +50,10 @@ export default function Party({ setLoading }) {
             setLoading(true);
             var reply = await axios.post('/admin/deleteParty', {
                 id: document.getElementsByClassName('party-id')[index].value
+            });
+            await axios.post('/admin/deleteLogins', {
+                user_type: "party",
+                user_id: document.getElementsByClassName('party-id')[index].value
             });
             fetchParties();
         } catch (error) {
@@ -61,6 +74,21 @@ export default function Party({ setLoading }) {
             fetchParties();
         } catch (error) {
             console.log("Error in editing party\n" + error);
+        }
+    }
+
+    const editLogin = async (index) => {
+        try {
+            setLoading(true);
+            await axios.post('/admin/setLogins', {
+                user_type: "party",
+                user_id: document.getElementsByClassName('party-id')[index].value,
+                user_name: document.getElementsByClassName('party-username')[index].value,
+                user_pass: document.getElementsByClassName('party-password')[index].value
+            });
+            fetchParties();
+        } catch (error) {
+            console.log("Error in changning login \n" + error);
         }
     }
 
@@ -90,6 +118,16 @@ export default function Party({ setLoading }) {
                     <div>
                         Party Alliance's<br />
                         <input type="text" className="input-field" id="new-party-alliance" style={{ width: "40vw" }} />
+                    </div>
+                </div>
+                <div className="action-buttons">
+                    <div>
+                        Login Username<br />
+                        <input type="text" className="input-field" id="new-party-username" />
+                    </div>
+                    <div>
+                        Login Password<br />
+                        <input type="text" className="input-field" id="new-party-password" />
                     </div>
                 </div>
                 <div style={{ height: '4vh' }} />
@@ -124,10 +162,21 @@ export default function Party({ setLoading }) {
                             <input type="text" className="input-field party-alliance" defaultValue={value.alliance} style={{ width: "40vw" }} />
                         </div>
                     </div>
+                    {login[index] && <div className="action-buttons">
+                        <div>
+                            Login Username<br />
+                            <input type="text" className="input-field party-username" defaultValue={login[index].user_name} />
+                        </div>
+                        <div>
+                            Login Password<br />
+                            <input type="text" className="input-field party-password" defaultValue={login[index].user_pass} />
+                        </div>
+                        <button className="input-button" onClick={() => {editLogin(index)}} style={{top: "3vh"}} >Modify Login</button>
+                    </div>}
                     <div style={{ height: '4vh' }} />
                     <div className="action-buttons">
-                        <button className="input-button input-button-red" onClick={() => {deleteParties(index)}} >Delete</button>
-                        <button className="input-button input-button-green" onClick={() => {editParty(index)}} >Change</button>
+                        <button className="input-button input-button-red" onClick={() => { deleteParties(index) }} >Delete</button>
+                        <button className="input-button input-button-green" onClick={() => { editParty(index) }} >Change</button>
                     </div>
                     <hr />
                 </div>

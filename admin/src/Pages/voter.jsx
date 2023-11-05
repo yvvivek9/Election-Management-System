@@ -11,9 +11,12 @@ export default function Party({ setLoading }) {
     const [voter, setVoter] = useState([]);
     const [consti, setConsti] = useState([]);
     const [search, setSearch] = useState("");
+    const [login, setLogin] = useState([]);
 
     const fetchVoter = async () => {
         try {
+            var reply0 = await axios.post("/admin/getLogins", { user_type: "voter" });
+            setLogin(reply0.data.data);
             var reply = await axios.post('/admin/getVoter');
             setVoter(reply.data.data);
             var reply2 = await axios.post('/admin/getConsti');
@@ -36,6 +39,12 @@ export default function Party({ setLoading }) {
                 caste: document.getElementById("new-voter-caste").value,
                 consti: document.getElementById("new-voter-consti").value,
             });
+            await axios.post('/admin/addLogins', {
+                user_type: "voter",
+                user_id: document.getElementById('new-voter-id').value,
+                user_name: document.getElementById('new-voter-username').value,
+                user_pass: document.getElementById('new-voter-password').value,
+            });
             fetchVoter();
         } catch (error) {
             console.log("Error in adding voter \n" + error);
@@ -47,6 +56,10 @@ export default function Party({ setLoading }) {
             setLoading(true);
             var reply = await axios.post('/admin/deleteVoter', {
                 id: document.getElementsByClassName("voter-id")[index].value
+            });
+            await axios.post('/admin/deleteLogins', {
+                user_type: "voter",
+                user_id: document.getElementsByClassName('voter-id')[index].value
             });
             fetchVoter();
         } catch (error) {
@@ -69,6 +82,21 @@ export default function Party({ setLoading }) {
             fetchVoter();
         } catch (error) {
             console.log("Error in adding voter \n" + error);
+        }
+    }
+
+    const editLogin = async (index) => {
+        try {
+            setLoading(true);
+            await axios.post('/admin/setLogins', {
+                user_type: "voter",
+                user_id: document.getElementsByClassName('voter-id')[index].value,
+                user_name: document.getElementsByClassName('voter-username')[index].value,
+                user_pass: document.getElementsByClassName('voter-password')[index].value
+            });
+            fetchVoter();
+        } catch (error) {
+            console.log("Error in changning login \n" + error);
         }
     }
 
@@ -120,6 +148,16 @@ export default function Party({ setLoading }) {
                                 return <option key={index} value={value.consti_id}>{value.consti_name}</option>
                             })}
                         </select>
+                    </div>
+                </div>
+                <div className="action-buttons">
+                    <div>
+                        Login Username<br />
+                        <input type="text" className="input-field" id="new-voter-username" />
+                    </div>
+                    <div>
+                        Login Password<br />
+                        <input type="text" className="input-field" id="new-voter-password" />
                     </div>
                 </div>
                 <div style={{ height: '4vh' }}></div>
@@ -185,6 +223,17 @@ export default function Party({ setLoading }) {
                             </select>
                         </div> 
                     </div>
+                    {login[index] && <div className="action-buttons">
+                        <div>
+                            Login Username<br />
+                            <input type="text" className="input-field voter-username" defaultValue={login[index].user_name} />
+                        </div>
+                        <div>
+                            Login Password<br />
+                            <input type="text" className="input-field voter-password" defaultValue={login[index].user_pass} />
+                        </div>
+                        <button className="input-button" onClick={() => {editLogin(index)}} style={{top: "3vh"}} >Modify Login</button>
+                    </div>}
                     <div style={{ height: '4vh' }}></div>
                     <div className="action-buttons">
                         <button className="input-button input-button-red" onClick={() => {deleteVoter(index)}} >Delete</button>

@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const path = require("path");
-const mysql = require("mysql");
+const mysql = require("mysql2");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,6 +40,52 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 app.use(express.static(path.resolve('application', 'build')));
 app.get("/", (req, res) => {
     res.sendFile(path.resolve('application', 'build', 'index.html'));
+});
+
+app.post("/admin/getLogins", async (req, res) => {
+    try {
+        var query = "SELECT * FROM login_db WHERE user_type = ? ORDER BY user_id";
+        var reply = await sqlQuery(query, [req.body.user_type]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/addLogins", async (req, res) => {
+    try {
+        var query = "INSERT INTO login_db VALUES (?, ?, ?, ?)";
+        await sqlQuery(query, [req.body.user_type, req.body.user_id, req.body.user_name, req.body.user_pass]);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/deleteLogins", async (req, res) => {
+    try {
+        // var query = "DELETE FROM login_db WHERE user_type=? AND user_id=?";
+        // await sqlQuery(query, [req.body.user_type, req.body.user_id]);
+        var query = "DELETE FROM login_db WHERE user_id=?";
+        await sqlQuery(query, [req.body.user_id]);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+})
+
+app.post("/admin/setLogins", async (req, res) => {
+    try {
+        var query = "UPDATE login_db SET user_name=?, user_pass=? WHERE user_type=? AND user_id=?";
+        await sqlQuery(query, [req.body.user_name, req.body.user_pass, req.body.user_type, req.body.user_id])
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
 });
 
 app.post("/admin/getConsti", async (req, res) => {
@@ -247,6 +293,78 @@ app.post("/admin/editVoter", async (req, res) => {
         res.status(401).json({ success: false });
     }
 });
+
+app.post("/admin/getAllResults", async (req, res) => {
+    try {
+        var query = "SELECT * FROM RESULTS";
+        var reply = await sqlQuery(query);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/addYearResult", async (req, res) => {
+    try {
+        var query1 = "CREATE TABLE IF NOT EXISTS ?? ( " +
+        "candidate_id INT PRIMARY KEY, " +
+        "consti_id INT, " +
+        "vote_share INT, " +
+        "FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE, " +
+        "FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE )";
+        await sqlQuery(query1, [req.body.table]);
+        var query2 = "INSERT INTO results VALUES (?, ?)";
+        await sqlQuery(query2, [req.body.year, "No"]);
+        var query3 = "INSERT INTO ?? " +
+        "SELECT id, consti_id, 0 FROM candidate";
+        await sqlQuery(query3, [req.body.table]);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/getResultsOfYear", async (req, res) => {
+    try {
+        var query = "SELECT ??.*, candidate.f_name, candidate.l_name, consti.consti_name " +
+        "FROM ((?? INNER JOIN candidate ON ??.candidate_id = candidate.id) " +
+        "INNER JOIN consti ON ??.consti_id = consti.consti_id) " +
+        "ORDER BY consti_id";
+        var reply = await sqlQuery(query, [req.body.table, req.body.table, req.body.table, req.body.table]);
+        res.status(200).json({ success: true, data: reply });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/setResultsOfYear", async (req, res) => {
+    try {
+        /** @type {Array} data */
+        var data = req.body.data;
+        for (var i = 0; i < data.length; i++) {
+            var query = "UPDATE ?? SET vote_share = ? WHERE candidate_id = ?";
+            await sqlQuery(query, [req.body.table, data[i].vote_share, data[i].candidate_id]);
+        }
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+});
+
+app.post("/admin/releaseResultsOfYear", async (req, res) => {
+    try {
+        var query = "UPDATE results SET released = 'Yes' WHERE r_year = ?";
+        await sqlQuery(query, [req.body.year]);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+})
 
 app.post("/validateLogin", async (req, res) => {
 
