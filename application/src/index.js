@@ -98,7 +98,7 @@ function Header({ logIn, setLogIn, user, party, setLoading }) {
 					<div className='header-info'>
 						<div className='header-info-text'>
 							<div>
-								Welcome {logIn.user === 'member' ? user.first_name + ' ' + user.last_name : party.name},<br />
+								Welcome {logIn.user === 'member' ? user.f_name + ' ' + user.l_name : party.p_name},<br />
 								ID: {logIn.user === 'member' ? user.id : party.id}
 							</div>
 						</div>

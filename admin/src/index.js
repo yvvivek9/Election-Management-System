@@ -34,13 +34,13 @@ function App() {
 		<BrowserRouter>
 			<div className='header-adjuster'></div>
 			<Routes>
-				<Route exact index path='/' element={<Login setLogIn={setLogIn} setLoading={setLoading} />} />
-				<Route exact path='/candidate' element={<Candidate setLoading={setLoading} />} />
-				<Route exact path='/constituency' element={<Consti setLoading={setLoading} />} />
-				<Route exact path='/dashboard' element={<Dashboard setLoading={setLoading} />} />
-				<Route exact path='/party' element={<Party setLoading={setLoading} />} />
-				<Route exact path='/results' element={<Results setLoading={setLoading} />} />
-				<Route exact path='/voter' element={<Voter setLoading={setLoading} />} />
+				<Route exact index path='/owner/' element={<Login setLogIn={setLogIn} setLoading={setLoading} />} />
+				<Route exact path='/owner/candidate' element={<Candidate setLoading={setLoading} />} />
+				<Route exact path='/owner/constituency' element={<Consti setLoading={setLoading} />} />
+				<Route exact path='/owner/dashboard' element={<Dashboard setLoading={setLoading} />} />
+				<Route exact path='/owner/party' element={<Party setLoading={setLoading} />} />
+				<Route exact path='/owner/results' element={<Results setLoading={setLoading} />} />
+				<Route exact path='/owner/voter' element={<Voter setLoading={setLoading} />} />
 			</Routes>
 			{showNav && <NavigationBar setLoading={setLoading} />}
 			<Header logIn={logIn} showNav={showNav} setShowNav={setShowNav} setLogIn={setLogIn} />
@@ -66,12 +66,12 @@ function Header({ logIn, showNav, setShowNav, setLogIn }) {
 
 	const navigate = useNavigate();
 	const handleLogOut = () => {
-		navigate("/");
+		navigate("/owner/");
 	}
 
 	const { pathname } = useLocation();
 	useEffect(() => {
-		if (pathname === '/') {
+		if (pathname === '/owner/') {
 			setLogIn({ status: false });
 		}
 	}, [pathname]);
@@ -110,7 +110,7 @@ function NavigationBar({ setLoading }) {
 	}, [pathname]);
 
 	const handleRoute = (route) => {
-		var routes = ['/dashboard', '/voter', '/candidate', '/party', '/constituency', '/results'];
+		var routes = ['/owner/dashboard', '/owner/voter', '/owner/candidate', '/owner/party', '/owner/constituency', '/owner/results'];
 		var index = routes.findIndex(value => value === route);
 		var buttons = document.getElementsByClassName('nav-button');
 		for (var i = 0; i < buttons.length; i++) {
@@ -125,27 +125,27 @@ function NavigationBar({ setLoading }) {
 	}
 
 	return <div className='navbar'>
-		<div className='nav-button' onClick={() => { handleClick('/dashboard') }}>
+		<div className='nav-button' onClick={() => { handleClick('/owner/dashboard') }}>
 			<div className='nav-button-layer1'>Dashboard</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => { handleClick('/voter') }}>
+		<div className='nav-button' onClick={() => { handleClick('/owner/voter') }}>
 			<div className='nav-button-layer1'>Voter</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => { handleClick('/candidate') }}>
+		<div className='nav-button' onClick={() => { handleClick('/owner/candidate') }}>
 			<div className='nav-button-layer1'>Candidate</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => { handleClick('/party') }}>
+		<div className='nav-button' onClick={() => { handleClick('/owner/party') }}>
 			<div className='nav-button-layer1'>Party</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => { handleClick('/constituency') }}>
+		<div className='nav-button' onClick={() => { handleClick('/owner/constituency') }}>
 			<div className='nav-button-layer1'>Constituency</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>
-		<div className='nav-button' onClick={() => { handleClick('/results') }}>
+		<div className='nav-button' onClick={() => { handleClick('/owner/results') }}>
 			<div className='nav-button-layer1'>Results</div>
 			<div className='nav-button-layer2'>&gt;</div>
 		</div>

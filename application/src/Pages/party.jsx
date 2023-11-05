@@ -5,7 +5,7 @@ import '../Styling/voter.css';
 
 import defaultDP from '../Media/default-dp.jpg';
 
-export default function Voter({ party, setLoading }) {
+export default function Party({ party, setLoading }) {
     useEffect(() => {
         fetchAnnouncements();
     }, []);
@@ -23,7 +23,7 @@ export default function Voter({ party, setLoading }) {
     }
 
     const [members, setMembers] = useState([]);
-    const [filters, setFilters] = useState({ filter: 'id', ruling: false });
+    const [filters, setFilters] = useState({ filter: 'candidate.id', ruling: false });
 
     useEffect(() => {
         fetchMembers();
@@ -31,11 +31,12 @@ export default function Voter({ party, setLoading }) {
 
     const fetchMembers = async () => {
         try {
-            var response = await axios.post('/getPartyMembers', filters);
-            if (response.status === 200) {
-                setMembers(response.data.members);
-                setLoading(false);
-            }
+            var response = await axios.post('/getPartyMembers', {
+                party_id: party.id,
+                filter: filters.filter
+            });
+            setMembers(response.data.data);
+            setLoading(false);
         } catch (error) {
             console.log('Error in fetching members: ' + error);
         }
@@ -46,15 +47,15 @@ export default function Voter({ party, setLoading }) {
         buttons[0].classList.remove('pm-sort-button-selected');
         buttons[1].classList.remove('pm-sort-button-selected');
         buttons[2].classList.remove('pm-sort-button-selected');
-        if (value === 'id') {
+        if (value === 'candidate.id') {
             buttons[0].classList.add('pm-sort-button-selected');
             setFilters({ ...filters, filter: value });
         }
-        else if (value === 'name') {
+        else if (value === 'candidate.f_name') {
             buttons[1].classList.add('pm-sort-button-selected');
             setFilters({ ...filters, filter: value });
         }
-        else if (value === 'state') {
+        else if (value === 'consti.consti_state') {
             buttons[2].classList.add('pm-sort-button-selected');
             setFilters({ ...filters, filter: value });
         }
@@ -71,11 +72,11 @@ export default function Voter({ party, setLoading }) {
                 </div>
                 <div className="vd-row">
                     <div>Party Name</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{party.name}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{party.p_name}</div>
                 </div>
                 <div className="vd-row">
                     <div>Location</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{party.location}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{party.p_location}</div>
                 </div>
                 <div className="vd-row">
                     <div>Leader</div>
@@ -83,9 +84,7 @@ export default function Voter({ party, setLoading }) {
                 </div>
                 <div className="vd-row">
                     <div>Alliance's</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{party.alliance.map((value) => {
-                        return value + ', '
-                    })}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{party.alliance}</div>
                 </div>
             </div>
             <div className="vd-column-2">
@@ -107,9 +106,9 @@ export default function Voter({ party, setLoading }) {
             <div className="pm-sort">
                 <div><b>Sort by :</b></div>
                 <div style={{ width: '2vw' }}></div>
-                <div className="pm-sort-button pm-sort-button-selected" onClick={() => { handleFilterChange('id') }}>ID</div>
-                <div className="pm-sort-button" onClick={() => { handleFilterChange('name') }}>Name</div>
-                <div className="pm-sort-button" onClick={() => { handleFilterChange('state') }}>State</div>
+                <div className="pm-sort-button pm-sort-button-selected" onClick={() => { handleFilterChange('candidate.id') }}>ID</div>
+                <div className="pm-sort-button" onClick={() => { handleFilterChange('candidate.f_name') }}>Name</div>
+                <div className="pm-sort-button" onClick={() => { handleFilterChange('consti.consti_state') }}>State</div>
                 <div style={{ flexGrow: '1' }}></div>
                 <div>
                     <label>
@@ -132,13 +131,25 @@ export default function Voter({ party, setLoading }) {
                 </thead>
                 <tbody>
                     {members.map((value, index) => {
-                        return <tr key={index}>
-                            <td>{value.id}</td>
-                            <td>{value.name}</td>
-                            <td>{value.consti}</td>
-                            <td>{value.state}</td>
-                            <td>{value.ruling ? 'Yes' : 'No'}</td>
-                        </tr>
+                        if (filters.ruling) {
+                            if (value.ruling === "Yes")
+                                return <tr key={index}>
+                                    <td>{value.id}</td>
+                                    <td>{value.f_name + " " + value.l_name}</td>
+                                    <td>{value.consti_name}</td>
+                                    <td>{value.consti_state}</td>
+                                    <td>{value.ruling}</td>
+                                </tr>
+                        }
+                        else {
+                            return <tr key={index}>
+                                <td>{value.id}</td>
+                                <td>{value.f_name + " " + value.l_name}</td>
+                                <td>{value.consti_name}</td>
+                                <td>{value.consti_state}</td>
+                                <td>{value.ruling}</td>
+                            </tr>
+                        }
                     })}
                 </tbody>
             </table>

@@ -16,8 +16,8 @@ export default function Login({ setLogIn, setUser, setParty, setLoading }) {
         var inputID = document.getElementById('login-id');
         var inputPWD = document.getElementById('login-password');
         var inputData = {
-            id: inputID.value,
-            password: inputPWD.value
+            user_name: inputID.value,
+            user_pass: inputPWD.value
         }
         try {
             var response = await axios.post('/validateLogin', inputData);

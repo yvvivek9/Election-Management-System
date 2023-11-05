@@ -18,7 +18,7 @@ export default function Login({ setLogIn, setLoading }) {
             if (inputID.value === "admin" && inputPWD.value === "admin") {
                 setLoading(true);
                 setLogIn({ status: true, user: 'Admin', id: '34567' });
-                navigate('/dashboard');
+                navigate('/owner/dashboard');
             }
             else {
                 alert("Invalid Credentials");

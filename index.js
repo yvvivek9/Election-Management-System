@@ -37,7 +37,12 @@ var announcements = [
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-app.use(express.static(path.resolve('application', 'build')));
+app.use("/owner/", express.static(path.resolve('admin', 'build')));
+app.get("/owner/", (req, res) => {
+    res.sendFile(path.resolve('admin', 'build', 'index.html'));
+});
+
+app.use("/", express.static(path.resolve('application', 'build')));
 app.get("/", (req, res) => {
     res.sendFile(path.resolve('application', 'build', 'index.html'));
 });
@@ -296,7 +301,7 @@ app.post("/admin/editVoter", async (req, res) => {
 
 app.post("/admin/getAllResults", async (req, res) => {
     try {
-        var query = "SELECT * FROM RESULTS";
+        var query = "SELECT * FROM results";
         var reply = await sqlQuery(query);
         res.status(200).json({ success: true, data: reply });
     } catch (error) {
@@ -308,16 +313,16 @@ app.post("/admin/getAllResults", async (req, res) => {
 app.post("/admin/addYearResult", async (req, res) => {
     try {
         var query1 = "CREATE TABLE IF NOT EXISTS ?? ( " +
-        "candidate_id INT PRIMARY KEY, " +
-        "consti_id INT, " +
-        "vote_share INT, " +
-        "FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE, " +
-        "FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE )";
+            "candidate_id INT PRIMARY KEY, " +
+            "consti_id INT, " +
+            "vote_share INT, " +
+            "FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE, " +
+            "FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE )";
         await sqlQuery(query1, [req.body.table]);
         var query2 = "INSERT INTO results VALUES (?, ?)";
         await sqlQuery(query2, [req.body.year, "No"]);
         var query3 = "INSERT INTO ?? " +
-        "SELECT id, consti_id, 0 FROM candidate";
+            "SELECT id, consti_id, 0 FROM candidate";
         await sqlQuery(query3, [req.body.table]);
         res.status(200).json({ success: true });
     } catch (error) {
@@ -329,9 +334,9 @@ app.post("/admin/addYearResult", async (req, res) => {
 app.post("/admin/getResultsOfYear", async (req, res) => {
     try {
         var query = "SELECT ??.*, candidate.f_name, candidate.l_name, consti.consti_name " +
-        "FROM ((?? INNER JOIN candidate ON ??.candidate_id = candidate.id) " +
-        "INNER JOIN consti ON ??.consti_id = consti.consti_id) " +
-        "ORDER BY consti_id";
+            "FROM ((?? INNER JOIN candidate ON ??.candidate_id = candidate.id) " +
+            "INNER JOIN consti ON ??.consti_id = consti.consti_id) " +
+            "ORDER BY consti_id";
         var reply = await sqlQuery(query, [req.body.table, req.body.table, req.body.table, req.body.table]);
         res.status(200).json({ success: true, data: reply });
     } catch (error) {
@@ -367,79 +372,88 @@ app.post("/admin/releaseResultsOfYear", async (req, res) => {
 })
 
 app.post("/validateLogin", async (req, res) => {
-
-    var voter = {
-        success: true,
-        details: {
-            status: true,
-            user: 'member',
-            type: 'voter',
-        },
-        user: {
-            id: 123456789,
-            first_name: 'Vivek',
-            last_name: 'Y V',
-            age: '22',
-            gender: 'Male',
-            caste: 'Hindu',
-            consti: 'Bengaluru North',
-            state: 'Karnataka',
-        },
-        party: null
-    }
-    var candidate = {
-        success: true,
-        details: {
-            status: true,
-            user: 'member',
-            type: 'candidate',
-        },
-        user: {
-            id: 1234567,
-            first_name: 'Vivek',
-            last_name: 'Y V',
-            age: '22',
-            gender: 'Male',
-            caste: 'Hindu',
-            consti: 'Bengaluru North',
-            state: 'Karnataka',
-            party: 'Jana Sena',
-            ruling: 'Kakinada',
-        },
-    }
-    var party = {
-        success: true,
-        details: {
-            status: true,
-            user: 'party',
-            type: 'party',
-        },
-        party: {
-            id: 12345,
-            name: 'BJP',
-            location: 'Gujarat',
-            leader: 'J P Nadda',
-            alliance: ['chutiya', 'samja', 'kya'],
+    try {
+        var query = "SELECT * FROM login_db WHERE user_name=? AND user_pass=?";
+        var reply = await sqlQuery(query, [req.body.user_name, req.body.user_pass]);
+        if (reply.length !== 0) {
+            if (reply[0].user_type === "party") {
+                var query2 = "SELECT * FROM party WHERE id=?";
+                var reply2 = await sqlQuery(query2, [reply[0].user_id]);
+                res.status(200).json({
+                    success: true,
+                    details: {
+                        status: true,
+                        user: 'party',
+                        type: 'party',
+                    },
+                    party: reply2[0]
+                });
+            }
+            else if (reply[0].user_type === "voter") {
+                var query2 =
+                    "SELECT voter.*, consti.consti_name, consti.consti_state FROM voter " +
+                    "INNER JOIN consti ON voter.consti_id = consti.consti_id " +
+                    "WHERE id = ?";
+                var reply2 = await sqlQuery(query2, [reply[0].user_id]);
+                res.status(200).json({
+                    success: true,
+                    details: {
+                        status: true,
+                        user: 'member',
+                        type: 'voter',
+                    },
+                    user: reply2[0]
+                });
+            }
+            else if (reply[0].user_type === "candidate") {
+                var query2 =
+                    "SELECT candidate.*, consti.consti_name, consti.consti_state, party.p_name FROM ((candidate " +
+                    "INNER JOIN consti ON candidate.consti_id = consti.consti_id) " +
+                    "INNER JOIN party ON candidate.party_id = party.id) " +
+                    "WHERE candidate.id = ?";
+                var reply2 = await sqlQuery(query2, [reply[0].user_id]);
+                res.status(200).json({
+                    success: true,
+                    details: {
+                        status: true,
+                        user: 'member',
+                        type: 'voter',
+                    },
+                    user: reply2[0]
+                });
+            }
         }
-    }
-    if (req.body.id === 'voter')
-        res.status(200).json(voter);
-    else if (req.body.id === 'candidate')
-        res.status(200).json(candidate);
-    else if (req.body.id === 'party')
-        res.status(200).json(party);
-    else
+        else res.status(200).json({ success: false });
+    } catch (error) {
+        console.log(error);
         res.status(401).json({ success: false });
+    }
 });
 
-app.post("/getPartyMembers", (req, res) => {
-    console.log(req.body);
-    var members = [
-        { id: '10', name: 'Narendra Modi', consti: 'Ahmedabad Main', state: 'Karnataka', ruling: true },
-        { id: '11', name: 'Amit Shah', consti: 'UP ka Raja', state: 'Uttar Pradesh', ruling: false }
-    ];
-    res.status(200).json({ members: members });
+app.post("/getPartyMembers", async (req, res) => {
+    try {
+        var query = 
+        "SELECT candidate.id, candidate.f_name, candidate.l_name, candidate.ruling, consti.consti_name, consti.consti_state " +
+        "FROM candidate INNER JOIN consti ON candidate.consti_id = consti.consti_id " +
+        "WHERE candidate.party_id=? ORDER BY ??";
+        var reply = await sqlQuery(query, [req.body.party_id, req.body.filter]);
+        res.status(200).json({ success: true, data: reply })
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
 });
+
+app.post("/getStats", async (req, res) => {
+    try {
+        var query = "SELECT * FROM diversity WHERE consti_id = ?";
+        var reply = await sqlQuery(query, [req.body.consti_id]);
+        res.status(200).json({ success: true, data: reply[0] });
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({ success: false });
+    }
+})
 
 app.post('/getAnnouncements', (req, res) => {
     res.status(200).json({ success: true, announcements: announcements });
@@ -453,10 +467,3 @@ app.post('/setAnnouncements', (req, res) => {
 app.listen(4000, () => {
     console.log('Server started running on port 4000');
 });
-
-var query =
-    "SELECT candidate.*, consti.consti_name, party.p_name " +
-    "FROM ((candidate " +
-    "INNER JOIN consti ON candidate.consti_id = consti.consti_id) " +
-    "INNER JOIN party ON candidate.party_id = party.id) " +
-    "ORDER BY id";

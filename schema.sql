@@ -104,11 +104,11 @@ INSERT INTO voter (id, f_name, l_name, age, gender, caste, consti_id) VALUES
 (100024, 'Charlotte', 'Lee', 29, 'Male', 'BC', 1004);
 
 INSERT INTO diversity (consti_id, total, men, women, oc, bc, scst) VALUES
-(1000, 5, 3, 2, 1, 2, 2),
-(1001, 5, 2, 3, 2, 1, 2),
-(1002, 5, 3, 2, 1, 2, 2),
-(1003, 5, 2, 3, 2, 1, 2),
-(1004, 5, 3, 2, 1, 2, 2);
+(1000, 1000, 800, 200, 500, 300, 200),
+(1001, 1200, 700, 500, 500, 500, 200),
+(1002, 1100, 600, 500, 200, 400, 500),
+(1003, 1000, 400, 600, 300, 500, 200),
+(1004, 1500, 700, 800, 500, 800, 200);
 
 INSERT INTO candidate (id, f_name, l_name, age, gender, caste, consti_id, ruling, party_id) VALUES
 (10000, 'Alex', 'Brown', 45, 'Male', 'OC', 1000, 'Yes', 100),
@@ -117,12 +117,12 @@ INSERT INTO candidate (id, f_name, l_name, age, gender, caste, consti_id, ruling
 (10003, 'William', 'Martinez', 41, 'Male', 'OC', 1001, 'Yes', 100),
 (10004, 'Sophia', 'Robinson', 39, 'Female', 'BC', 1001, 'No', 101),
 (10005, 'Ethan', 'Clark', 37, 'Male', 'SC-ST', 1001, 'No', 102),
-(10006, 'Jacob', 'Harris', 39, 'Male', 'OC', 1002, 'Yes', 100),
-(10007, 'Alexander', 'Martin', 37, 'Male', 'BC', 1002, 'No', 101),
+(10006, 'Jacob', 'Harris', 39, 'Male', 'OC', 1002, 'No', 100),
+(10007, 'Alexander', 'Martin', 37, 'Male', 'BC', 1002, 'Yes', 101),
 (10008, 'Harper', 'Thompson', 28, 'Female', 'SC-ST', 1002, 'No', 102),
-(10009, 'Evelyn', 'Johnson', 34, 'Male', 'OC', 1003, 'Yes', 100),
+(10009, 'Evelyn', 'Johnson', 34, 'Male', 'OC', 1003, 'No', 100),
 (10010, 'Mia', 'Anderson', 30, 'Female', 'BC', 1003, 'No', 101),
-(10011, 'Aiden', 'Jackson', 31, 'Male', 'SC-ST', 1003, 'No', 102),
+(10011, 'Aiden', 'Jackson', 31, 'Male', 'SC-ST', 1003, 'Yes', 102),
 (10012, 'Mason', 'Harris', 33, 'Male', 'OC', 1004, 'Yes', 100),
 (10013, 'Amelia', 'Martin', 29, 'Female', 'BC', 1004, 'No', 101),
 (10014, 'Charlotte', 'Thompson', 32, 'Female', 'SC-ST', 1004, 'No', 102);

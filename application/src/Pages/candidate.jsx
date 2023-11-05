@@ -35,7 +35,7 @@ export default function Candidate ({user, setLoading}) {
                 </div>
                 <div className="vd-row">
                     <div>Name</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{user.first_name + ' ' + user.last_name}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{user.f_name + ' ' + user.l_name}</div>
                 </div>
                 <div className="vd-row">
                     <div>Age</div>
@@ -51,15 +51,15 @@ export default function Candidate ({user, setLoading}) {
                 </div>
                 <div className="vd-row">
                     <div>Constituency</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{user.consti}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{user.consti_name}</div>
                 </div>
                 <div className="vd-row">
                     <div>State</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{user.state}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{user.Consti_state}</div>
                 </div>
                 <div className="vd-row">
                     <div>Party</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{user.party}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{user.p_name}</div>
                 </div>
                 <div className="vd-row">
                     <div>Ruling</div>
