@@ -118,7 +118,7 @@ export default function Party({ setLoading }) {
                     <tr>
                         <th>Candidate ID</th>
                         <th>Candidate Name</th>
-                        <th>Constituency ID</th>
+                        <th>Candidate Party</th>
                         <th>Constituency Name</th>
                         <th>Vote Share</th>
                     </tr>
@@ -128,7 +128,7 @@ export default function Party({ setLoading }) {
                         return <tr key={value.candidate_id}>
                             <td className="result result-id">{value.candidate_id}</td>
                             <td>{value.f_name + value.l_name}</td>
-                            <td>{value.consti_id}</td>
+                            <td>{value.p_name}</td>
                             <td>{value.consti_name}</td>
                             <td><input type="text" className="input-field result-share" defaultValue={value.vote_share} style={{textAlign: "center"}} /></td>
                         </tr>

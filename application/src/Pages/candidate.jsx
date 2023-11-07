@@ -30,7 +30,7 @@ export default function Candidate ({user, setLoading}) {
         <div className="voter-details">
             <div className="vd-column-1">
                 <div className="vd-row">
-                    <div>Voter ID</div>
+                    <div>Candidate ID</div>
                     <div>: &nbsp;&nbsp;&nbsp;{user.id}</div>
                 </div>
                 <div className="vd-row">
