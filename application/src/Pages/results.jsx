@@ -15,7 +15,7 @@ export default function Statistics({ setLoading }) {
     const fetchData = async () => {
         try {
             var reply = await axios.post("/admin/getResultsOfYear", {
-                table: "r_" + selectedYear
+                year: selectedYear
             });
             setData(reply.data.data);
             setLoading(false);
@@ -33,7 +33,7 @@ export default function Statistics({ setLoading }) {
 
     const fetchResults = async () => {
         try {
-            var reply = await axios.post('/admin/getAllResults');
+            var reply = await axios.post('/admin/getAllAvailableResults');
             setavailableResults(reply.data.data);
             setLoading(false);
         } catch (error) {

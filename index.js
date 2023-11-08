@@ -299,9 +299,9 @@ app.post("/admin/editVoter", async (req, res) => {
     }
 });
 
-app.post("/admin/getAllResults", async (req, res) => {
+app.post("/admin/getAllAvailableResults", async (req, res) => {
     try {
-        var query = "SELECT * FROM results";
+        var query = "SELECT * FROM show_results";
         var reply = await sqlQuery(query);
         res.status(200).json({ success: true, data: reply });
     } catch (error) {
@@ -312,20 +312,11 @@ app.post("/admin/getAllResults", async (req, res) => {
 
 app.post("/admin/addYearResult", async (req, res) => {
     try {
-        var query1 = "CREATE TABLE IF NOT EXISTS ?? ( " +
-            "candidate_id INT PRIMARY KEY, " +
-            "consti_id INT, " +
-            "party_id INT, " +
-            "vote_share INT, " +
-            "FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE SET NULL, "
-            "FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE, " +
-            "FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE )";
-        await sqlQuery(query1, [req.body.table]);
-        var query2 = "INSERT INTO results VALUES (?, ?)";
+        var query2 = "INSERT INTO show_results VALUES (?, ?)";
         await sqlQuery(query2, [req.body.year, "No"]);
-        var query3 = "INSERT INTO ?? " +
-            "SELECT id, consti_id, party_id, 0 FROM candidate";
-        await sqlQuery(query3, [req.body.table]);
+        var query3 = "INSERT INTO results " +
+            "SELECT ?, id, consti_id, party_id, 0 FROM candidate";
+        await sqlQuery(query3, [req.body.year]);
         res.status(200).json({ success: true });
     } catch (error) {
         console.log(error);
@@ -335,12 +326,13 @@ app.post("/admin/addYearResult", async (req, res) => {
 
 app.post("/admin/getResultsOfYear", async (req, res) => {
     try {
-        var query = "SELECT ??.*, candidate.f_name, candidate.l_name, consti.consti_name, party.p_name " +
-            "FROM (((?? INNER JOIN candidate ON ??.candidate_id = candidate.id) " +
-            "INNER JOIN consti ON ??.consti_id = consti.consti_id) " +
-            "INNER JOIN party ON ??.party_id = party.id) " +
+        var query = "SELECT results.*, candidate.f_name, candidate.l_name, consti.consti_name, party.p_name " +
+            "FROM (((results INNER JOIN candidate ON results.candidate_id = candidate.id) " +
+            "INNER JOIN consti ON results.consti_id = consti.consti_id) " +
+            "INNER JOIN party ON results.party_id = party.id) " +
+            "WHERE results.r_year = ? " +
             "ORDER BY consti_id";
-        var reply = await sqlQuery(query, [req.body.table, req.body.table, req.body.table, req.body.table, req.body.table]);
+        var reply = await sqlQuery(query, [req.body.year]);
         res.status(200).json({ success: true, data: reply });
     } catch (error) {
         console.log(error);
@@ -353,11 +345,11 @@ app.post("/admin/setResultsOfYear", async (req, res) => {
         /** @type {Array} data */
         var data = req.body.data;
         for (var i = 0; i < data.length; i++) {
-            var query = "UPDATE ?? SET vote_share = ? WHERE candidate_id = ?";
-            await sqlQuery(query, [req.body.table, data[i].vote_share, data[i].candidate_id]);
+            var query = "UPDATE results SET vote_share = ? WHERE candidate_id = ? AND r_year = ?";
+            await sqlQuery(query, [data[i].vote_share, data[i].candidate_id, req.body.year]);
         }
-        var query2 = "CALL ??";
-        var reply2 = await sqlQuery(query2, ['set_ruling_' + req.body.table]);
+        // var query2 = "CALL ??";
+        // var reply2 = await sqlQuery(query2, ['set_ruling_' + req.body.table]);
         res.status(200).json({ success: true });
     } catch (error) {
         console.log(error);
@@ -367,7 +359,7 @@ app.post("/admin/setResultsOfYear", async (req, res) => {
 
 app.post("/admin/releaseResultsOfYear", async (req, res) => {
     try {
-        var query = "UPDATE results SET released = 'Yes' WHERE r_year = ?";
+        var query = "UPDATE show_results SET released = 'Yes' WHERE r_year = ?";
         await sqlQuery(query, [req.body.year]);
         res.status(200).json({ success: true });
     } catch (error) {
@@ -384,6 +376,8 @@ app.post("/validateLogin", async (req, res) => {
             if (reply[0].user_type === "party") {
                 var query2 = "SELECT * FROM party WHERE id=?";
                 var reply2 = await sqlQuery(query2, [reply[0].user_id]);
+                var query3 = "SELECT COUNT(*) FROM candidate WHERE ruling='Yes' AND party_id = ?";
+                var reply3 = await sqlQuery(query3, [reply[0].user_id]);
                 res.status(200).json({
                     success: true,
                     details: {
@@ -391,7 +385,10 @@ app.post("/validateLogin", async (req, res) => {
                         user: 'party',
                         type: 'party',
                     },
-                    party: reply2[0]
+                    party: {
+                        ...reply2[0],
+                        count: reply3[0]["COUNT(*)"]
+                    }
                 });
             }
             else if (reply[0].user_type === "voter") {
@@ -400,6 +397,7 @@ app.post("/validateLogin", async (req, res) => {
                     "INNER JOIN consti ON voter.consti_id = consti.consti_id " +
                     "WHERE id = ?";
                 var reply2 = await sqlQuery(query2, [reply[0].user_id]);
+                
                 res.status(200).json({
                     success: true,
                     details: {

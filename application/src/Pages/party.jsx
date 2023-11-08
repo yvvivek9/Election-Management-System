@@ -86,6 +86,10 @@ export default function Party({ party, setLoading }) {
                     <div>Alliance's</div>
                     <div>: &nbsp;&nbsp;&nbsp;{party.alliance}</div>
                 </div>
+                <div className="vd-row">
+                    <div>Current Ruling Candidates</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{party.count}</div>
+                </div>
             </div>
             <div className="vd-column-2">
                 <figure>

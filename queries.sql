@@ -42,3 +42,14 @@ BEGIN
     ORDER BY candidate.id;
 END$$
 DELIMITER ;
+
+DELIMITER $$ 
+CREATE PROCEDURE viewResults()
+BEGIN
+    SELECT results.r_year, results.candidate_id, candidate.f_name, candidate.l_name, consti.consti_name, party.p_name, results.vote_share
+    FROM (((results INNER JOIN candidate ON results.candidate_id = candidate.id)
+    INNER JOIN consti ON results.consti_id = consti.consti_id)
+    INNER JOIN party ON results.party_id = party.id)
+    ORDER BY results.r_year, results.consti_id;
+END$$
+DELIMITER ;

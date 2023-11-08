@@ -58,9 +58,22 @@ CREATE TABLE IF NOT EXISTS candidate (
     CONSTRAINT candidate_fk2 FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS results (
+CREATE TABLE IF NOT EXISTS show_results (
     r_year INT PRIMARY KEY,
     released ENUM('Yes', 'No')
+);
+
+CREATE TABLE IF NOT EXISTS results (
+    r_year INT,
+    candidate_id INT,
+    consti_id INT,
+    party_id INT,
+    vote_share INT,
+    PRIMARY KEY (r_year, candidate_id),
+    FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE SET NULL,
+    FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE,
+    FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE,
+    FOREIGN KEY (r_year) REFERENCES show_results(r_year) ON DELETE CASCADE
 );
 
 DELIMITER //
@@ -69,24 +82,18 @@ CREATE TRIGGER after_voter_insert
 AFTER INSERT ON voter
 FOR EACH ROW
 BEGIN
-    DECLARE v_consti_id INT;
-    DECLARE v_caste VARCHAR(10);
-    DECLARE v_gender VARCHAR(10);
-
-    SELECT consti_id, caste, gender INTO v_consti_id, v_caste, v_gender FROM voter WHERE id = NEW.id;
-
-    IF (v_caste = 'OC') THEN
-        UPDATE diversity SET oc = oc + 1 WHERE consti_id = v_consti_id;
-    ELSEIF (v_caste = 'BC') THEN
-        UPDATE diversity SET bc = bc + 1 WHERE consti_id = v_consti_id;
+    IF (NEW.caste = 'OC') THEN
+        UPDATE diversity SET oc = oc + 1 WHERE consti_id = NEW.consti_id;
+    ELSEIF (NEW.caste = 'BC') THEN
+        UPDATE diversity SET bc = bc + 1 WHERE consti_id = NEW.consti_id;
     ELSE
-        UPDATE diversity SET scst = scst + 1 WHERE consti_id = v_consti_id;
+        UPDATE diversity SET scst = scst + 1 WHERE consti_id = NEW.consti_id;
     END IF;
 
-    IF (v_gender = 'Male') THEN
-        UPDATE diversity SET men = men + 1 WHERE consti_id = v_consti_id;
+    IF (NEW.gender = 'Male') THEN
+        UPDATE diversity SET men = men + 1 WHERE consti_id = NEW.consti_id;
     ELSE
-        UPDATE diversity SET women = women + 1 WHERE consti_id = v_consti_id;
+        UPDATE diversity SET women = women + 1 WHERE consti_id = NEW.consti_id;
     END IF;
 END//
 
@@ -98,44 +105,32 @@ CREATE TRIGGER after_voter_update
 AFTER UPDATE ON voter
 FOR EACH ROW
 BEGIN
-    DECLARE old_consti_id INT;
-    DECLARE new_consti_id INT;
-    DECLARE old_caste VARCHAR(10);
-    DECLARE new_caste VARCHAR(10);
-    DECLARE old_gender VARCHAR(10);
-    DECLARE new_gender VARCHAR(10);
-
-    SELECT consti_id, caste, gender INTO old_consti_id, old_caste, old_gender FROM voter WHERE id = OLD.id;
-    SELECT consti_id, caste, gender INTO new_consti_id, new_caste, new_gender FROM voter WHERE id = NEW.id;
-
-    IF old_consti_id <> new_consti_id THEN
-        IF old_caste = 'OC' THEN
-            UPDATE diversity SET oc = oc - 1 WHERE consti_id = old_consti_id;
-        ELSEIF old_caste = 'BC' THEN
-            UPDATE diversity SET bc = bc - 1 WHERE consti_id = old_consti_id;
-        ELSE
-            UPDATE diversity SET scst = scst - 1 WHERE consti_id = old_consti_id;
-        END IF;
-
-        IF new_caste = 'OC' THEN
-            UPDATE diversity SET oc = oc + 1 WHERE consti_id = new_consti_id;
-        ELSEIF new_caste = 'BC' THEN
-            UPDATE diversity SET bc = bc + 1 WHERE consti_id = new_consti_id;
-        ELSE
-            UPDATE diversity SET scst = scst + 1 WHERE consti_id = new_consti_id;
-        END IF;
+    IF OLD.caste = 'OC' THEN
+        UPDATE diversity SET oc = oc - 1 WHERE consti_id = OLD.consti_id;
+    ELSEIF OLD.caste = 'BC' THEN
+        UPDATE diversity SET bc = bc - 1 WHERE consti_id = OLD.consti_id;
+    ELSE
+        UPDATE diversity SET scst = scst - 1 WHERE consti_id = OLD.consti_id;
     END IF;
 
-    IF old_gender = 'Male' THEN
-        UPDATE diversity SET men = men - 1 WHERE consti_id = old_consti_id;
+    IF NEW.caste = 'OC' THEN
+        UPDATE diversity SET oc = oc + 1 WHERE consti_id = NEW.consti_id;
+    ELSEIF NEW.caste = 'BC' THEN
+        UPDATE diversity SET bc = bc + 1 WHERE consti_id = NEW.consti_id;
     ELSE
-        UPDATE diversity SET women = women - 1 WHERE consti_id = old_consti_id;
+        UPDATE diversity SET scst = scst + 1 WHERE consti_id = NEW.consti_id;
     END IF;
 
-    IF new_gender = 'Male' THEN
-        UPDATE diversity SET men = men + 1 WHERE consti_id = new_consti_id;
+    IF OLD.gender = 'Male' THEN
+        UPDATE diversity SET men = men - 1 WHERE consti_id = OLD.consti_id;
     ELSE
-        UPDATE diversity SET women = women + 1 WHERE consti_id = new_consti_id;
+        UPDATE diversity SET women = women - 1 WHERE consti_id = OLD.consti_id;
+    END IF;
+
+    IF NEW.gender = 'Male' THEN
+        UPDATE diversity SET men = men + 1 WHERE consti_id = NEW.consti_id;
+    ELSE
+        UPDATE diversity SET women = women + 1 WHERE consti_id = NEW.consti_id;
     END IF;
 END//
 
@@ -147,24 +142,18 @@ CREATE TRIGGER after_voter_delete
 AFTER DELETE ON voter
 FOR EACH ROW
 BEGIN
-    DECLARE old_consti_id INT;
-    DECLARE old_caste VARCHAR(10);
-    DECLARE old_gender VARCHAR(10);
-
-    SELECT consti_id, caste, gender INTO old_consti_id, old_caste, old_gender FROM voter WHERE id = OLD.id;
-
-    IF old_caste = 'OC' THEN
-        UPDATE diversity SET oc = oc - 1 WHERE consti_id = old_consti_id;
-    ELSEIF old_caste = 'BC' THEN
-        UPDATE diversity SET bc = bc - 1 WHERE consti_id = old_consti_id;
+    IF OLD.caste = 'OC' THEN
+        UPDATE diversity SET oc = oc - 1 WHERE consti_id = OLD.consti_id;
+    ELSEIF OLD.caste = 'BC' THEN
+        UPDATE diversity SET bc = bc - 1 WHERE consti_id = OLD.consti_id;
     ELSE
-        UPDATE diversity SET scst = scst - 1 WHERE consti_id = old_consti_id;
+        UPDATE diversity SET scst = scst - 1 WHERE consti_id = OLD.consti_id;
     END IF;
 
-    IF old_gender = 'Male' THEN
-        UPDATE diversity SET men = men - 1 WHERE consti_id = old_consti_id;
+    IF OLD.gender = 'Male' THEN
+        UPDATE diversity SET men = men - 1 WHERE consti_id = OLD.consti_id;
     ELSE
-        UPDATE diversity SET women = women - 1 WHERE consti_id = old_consti_id;
+        UPDATE diversity SET women = women - 1 WHERE consti_id = OLD.consti_id;
     END IF;
 END//
 
@@ -182,7 +171,7 @@ BEGIN
     
     DECLARE cur CURSOR FOR 
         SELECT consti_id, candidate_id, party_id, vote_share 
-        FROM r_2022;
+        FROM results WHERE r_year = 2022;
     
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     
@@ -194,7 +183,7 @@ BEGIN
             LEAVE read_loop;
         END IF;
         
-        IF vote_share_var = (SELECT MAX(vote_share) FROM r_2022 WHERE consti_id = consti_id_var) THEN
+        IF vote_share_var = (SELECT MAX(vote_share) FROM results WHERE consti_id = consti_id_var AND r_year = 2022) THEN
             UPDATE candidate SET ruling = 'Yes' WHERE id = candidate_id_var;
         ELSE
             UPDATE candidate SET ruling = 'No' WHERE id = candidate_id_var;
@@ -206,72 +195,9 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE set_ruling_r_2023()
+CREATE PROCEDURE set_ruling()
 BEGIN
-    
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE consti_id_var INT;
-    DECLARE candidate_id_var INT;
-    DECLARE party_id_var INT;
-    DECLARE vote_share_var INT;
-    
-    DECLARE cur CURSOR FOR 
-        SELECT consti_id, candidate_id, party_id, vote_share 
-        FROM r_2023;
-    
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-    
-    OPEN cur;
-    
-    read_loop: LOOP
-        FETCH cur INTO consti_id_var, candidate_id_var, party_id_var, vote_share_var;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        
-        IF vote_share_var = (SELECT MAX(vote_share) FROM r_2023 WHERE consti_id = consti_id_var) THEN
-            UPDATE candidate SET ruling = 'Yes' WHERE id = candidate_id_var;
-        ELSE
-            UPDATE candidate SET ruling = 'No' WHERE id = candidate_id_var;
-        END IF;
-    END LOOP;
-    
-    CLOSE cur;
-END$$
-DELIMITER ;
 
-DELIMITER $$
-CREATE PROCEDURE set_ruling_r_2024()
-BEGIN
-    
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE consti_id_var INT;
-    DECLARE candidate_id_var INT;
-    DECLARE party_id_var INT;
-    DECLARE vote_share_var INT;
-    
-    DECLARE cur CURSOR FOR 
-        SELECT consti_id, candidate_id, party_id, vote_share 
-        FROM r_2024;
-    
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-    
-    OPEN cur;
-    
-    read_loop: LOOP
-        FETCH cur INTO consti_id_var, candidate_id_var, party_id_var, vote_share_var;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        
-        IF vote_share_var = (SELECT MAX(vote_share) FROM r_2024 WHERE consti_id = consti_id_var) THEN
-            UPDATE candidate SET ruling = 'Yes' WHERE id = candidate_id_var;
-        ELSE
-            UPDATE candidate SET ruling = 'No' WHERE id = candidate_id_var;
-        END IF;
-    END LOOP;
-    
-    CLOSE cur;
 END$$
 DELIMITER ;
 
@@ -384,50 +310,37 @@ INSERT INTO login_db (user_type, user_id, user_name, user_pass) VALUES
 ('party', 101, 'party2', 'password2'),
 ('party', 102, 'party3', 'password3');
 
-INSERT INTO results
+INSERT INTO show_results
 VALUES
     (2022, 'Yes'),
     (2023, 'No');
 
-CREATE TABLE IF NOT EXISTS r_2022 (
-    candidate_id INT PRIMARY KEY,
-    consti_id INT,
-    party_id INT,
-    vote_share INT,
-    FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE SET NULL,
-    FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE,
-    FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE
-);
-
-INSERT INTO r_2022 (candidate_id, consti_id, party_id, vote_share) VALUES
-(10000, 1000, 100, 35),
-(10001, 1000, 101, 28),
-(10002, 1000, 102, 20),
-(10003, 1001, 100, 40),
-(10004, 1001, 101, 32),
-(10005, 1001, 102, 25),
-(10006, 1002, 100, 31),
-(10007, 1002, 101, 38),
-(10008, 1002, 102, 22),
-(10009, 1003, 100, 25),
-(10010, 1003, 101, 30),
-(10011, 1003, 102, 45),
-(10012, 1004, 100, 42),
-(10013, 1004, 101, 29),
-(10014, 1004, 102, 24);
+INSERT INTO results (r_year, candidate_id, consti_id, party_id, vote_share) VALUES
+(2022, 10000, 1000, 100, 35),
+(2022, 10001, 1000, 101, 28),
+(2022, 10002, 1000, 102, 20),
+(2022, 10003, 1001, 100, 40),
+(2022, 10004, 1001, 101, 32),
+(2022, 10005, 1001, 102, 25),
+(2022, 10006, 1002, 100, 31),
+(2022, 10007, 1002, 101, 38),
+(2022, 10008, 1002, 102, 22),
+(2022, 10009, 1003, 100, 25),
+(2022, 10010, 1003, 101, 30),
+(2022, 10011, 1003, 102, 45),
+(2022, 10012, 1004, 100, 42),
+(2022, 10013, 1004, 101, 29),
+(2022, 10014, 1004, 102, 24);
 
 CALL set_ruling_r_2022();
 
-CREATE TABLE IF NOT EXISTS r_2023 (
-    candidate_id INT PRIMARY KEY,
-    consti_id INT,
-    party_id INT,
-    vote_share INT,
-    FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE SET NULL,
-    FOREIGN KEY (candidate_id) REFERENCES candidate(id) ON DELETE CASCADE,
-    FOREIGN KEY (consti_id) REFERENCES consti(consti_id) ON DELETE CASCADE
-);
+INSERT INTO results
+SELECT 2023, id, consti_id, party_id, '0' FROM candidate;
 
-INSERT INTO r_2023
-SELECT id, consti_id, party_id, '0' FROM candidate;
-
+-- SELECT results.*, candidate.f_name, candidate.l_name, consti.consti_name, party.p_name
+-- FROM (((results
+-- INNER JOIN candidate ON results.candidate_id = candidate.id)
+-- INNER JOIN consti ON results.consti_id = consti.consti_id)
+-- INNER JOIN party ON results.party_id = party.id)
+-- WHERE results.vote_share IN (SELECT MAX(vote_share) from results GROUP BY consti_id HAVING r_year = 2022)
+-- AND r_year = 2022;

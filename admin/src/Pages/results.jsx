@@ -19,7 +19,7 @@ export default function Party({ setLoading }) {
 
     const getAllResults = async () => {
         try {
-            var reply = await axios.post('/admin/getAllResults');
+            var reply = await axios.post('/admin/getAllAvailableResults');
             setYear(reply.data.data);
             setLoading(false);
         } catch (error) {
@@ -31,8 +31,7 @@ export default function Party({ setLoading }) {
         try {
             var inputYear = document.getElementById("new-year").value;
             await axios.post('/admin/addYearResult', {
-                table: "r_" + inputYear,
-                year: year
+                year: inputYear
             });
             getAllResults();
         } catch (error) {
@@ -44,7 +43,7 @@ export default function Party({ setLoading }) {
         try {
             setReset(false);
             var reply = await axios.post('/admin/getResultsOfYear', {
-                table: "r_" + selectedYear
+                year: selectedYear
             });
             setResults(reply.data.data);
             setReset(true);
@@ -66,7 +65,7 @@ export default function Party({ setLoading }) {
                 });
             }
             await axios.post('/admin/setResultsOfYear', {
-                table: "r_" + selectedYear,
+                year: selectedYear,
                 data: data
             });
             setLoading(false);
