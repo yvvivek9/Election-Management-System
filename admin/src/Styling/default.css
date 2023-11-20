@@ -1,0 +1,123 @@
+.page-screen {
+    position: relative;
+    width: 100%;
+    min-height: 90vh;
+    overflow: auto;
+}
+
+.page-box {
+    position: relative;
+    width: 80vw;
+    margin: 5vh auto;
+    padding: 3vh 4vw;
+    background-color: rgb(14, 102, 124);
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px 3px rgb(138, 241, 255) inset;
+    font-size: 2.3vh;
+    line-height: 4vh;
+}
+
+.box-row {
+    width: 100%;
+}
+
+.box-row hr {
+    border: 2px solid rgb(0, 162, 211);
+    margin: 3vh auto;
+}
+
+.box-content {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.box-content div {
+    min-width: 25%;
+    margin-bottom: 1vh;
+}
+
+.action-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.input-field {
+    position: relative;
+    font-family: 'Rubik', sans-serif;
+    font-size: 2.5vh;
+    padding: 5px 10px;
+    width: 70%;
+}
+
+.input-field-default {
+    width: auto;
+}
+
+.input-field:focus {
+    outline: none;
+}
+
+.search-field {
+    position: relative;
+    font-family: 'Rubik', sans-serif;
+    font-size: 2.5vh;
+    padding: 5px 10px;
+    width: 30%;
+    display: inline-block;
+}
+
+.search-field:focus {
+    outline: none;
+}
+
+.input-button {
+    position: relative;
+    font-family: 'Rubik', sans-serif;
+    font-size: 2.5vh;
+    padding: 5px 10px;
+    cursor: pointer;
+    height: fit-content;
+}
+
+.input-button-red {
+    background-color: rgb(190, 0, 0);
+    color: whitesmoke;
+}
+
+.input-button-green {
+    background-color: rgb(0, 175, 0);
+    color: whitesmoke;
+}
+
+.announcement-input {
+    width: 90%;
+}
+
+.table {
+    position: relative;
+    margin: 5vh auto;
+    border: 2px solid whitesmoke;
+    border-spacing: 0;
+}
+
+.table th {
+    background-color: rgb(21, 144, 175);
+}
+
+.table td, th {
+    min-width: 10vw;
+    border: 1px solid whitesmoke;
+    padding: 2vh 2vw;
+    font-size: 2.3vh;
+    background-color: rgb(11, 85, 104);
+    text-align: center;
+}
+
+.outside-content {
+    width: fit-content;
+    display: flex;
+    margin: 0 auto;
+}
