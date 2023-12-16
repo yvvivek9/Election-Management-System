@@ -28,6 +28,7 @@ export default function Party({ party, setLoading }) {
     useEffect(() => {
         fetchMembers();
     }, [filters]);
+    
 
     const fetchMembers = async () => {
         try {

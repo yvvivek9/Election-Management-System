@@ -55,7 +55,7 @@ export default function Candidate ({user, setLoading}) {
                 </div>
                 <div className="vd-row">
                     <div>State</div>
-                    <div>: &nbsp;&nbsp;&nbsp;{user.Consti_state}</div>
+                    <div>: &nbsp;&nbsp;&nbsp;{user.consti_state}</div>
                 </div>
                 <div className="vd-row">
                     <div>Party</div>

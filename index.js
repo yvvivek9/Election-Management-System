@@ -368,6 +368,8 @@ app.post("/admin/releaseResultsOfYear", async (req, res) => {
     }
 })
 
+
+
 app.post("/validateLogin", async (req, res) => {
     try {
         var query = "SELECT * FROM login_db WHERE user_name=? AND user_pass=?";
@@ -420,7 +422,7 @@ app.post("/validateLogin", async (req, res) => {
                     details: {
                         status: true,
                         user: 'member',
-                        type: 'voter',
+                        type: 'candidate',
                     },
                     user: reply2[0]
                 });
